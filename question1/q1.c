@@ -6,66 +6,67 @@ struct key {
     char *word;
     int count;
 } keytab[] = {
-        "auto", 0,
-        "break", 0,
-        "case", 0,
-        "char", 0,
-        "const", 0,
-        "continue", 0,
-        "default", 0,
-        "do", 0,
-        "double", 0,
-        "else", 0,
-        "enum", 0,
-        "extern", 0,
-        "float", 0,
-        "for", 0,
-        "goto", 0,
-        "if", 0, 
-        "int", 0,
-        "long", 0,
-        "register", 0,
-        "return", 0,
-        "short", 0, 
-        "signed", 0,
-        "sizeof", 0,
-        "static", 0,
-        "struct", 0,
-        "switch", 0,
-        "typedef", 0,
-        "union", 0,
-        "unsigned", 0,
-        "void", 0,
-        "volatile", 0,
-        "while", 0,
-        "_Bool", 0,
-        "_Complex", 0,
-        "_Imaginary", 0,
-        "inline", 0,
-        "restrict", 0,
-        "_Alignas", 0,
-        "_Atomic", 0,
-        "_Generic", 0,
-        "_Noreturn", 0,
-        "_Static_assert", 0,
-        "_Threat_local", 0,
-        "alignas", 0,
-        "alignof", 0,
-        "bool", 0,
-        "constexpr", 0,
-        "false", 0,
-        "nullptr", 0,
-        "static_assert", 0,
-        "thread_local", 0,
-        "true", 0,
-        "typeof", 0,
-        "typeof_unqual", 0
+    "_Alignas", 0,
+    "_Atomic", 0,
+    "_Bool", 0,
+    "_Complex", 0,
+    "_Generic", 0,
+    "_Imaginary", 0,
+    "_Noreturn", 0,
+    "_Static_assert", 0,
+    "_Thread_local", 0,
+    "alignas", 0,
+    "alignof", 0,
+    "auto", 0,
+    "bool", 0,
+    "break", 0,
+    "case", 0,
+    "char", 0,
+    "const", 0,
+    "constexpr", 0,
+    "continue", 0,
+    "default", 0,
+    "do", 0,
+    "double", 0,
+    "else", 0,
+    "enum", 0,
+    "extern", 0,
+    "false", 0,
+    "float", 0,
+    "for", 0,
+    "goto", 0,
+    "if", 0,
+    "inline", 0,
+    "int", 0,
+    "long", 0,
+    "nullptr", 0,
+    "register", 0,
+    "restrict", 0,
+    "return", 0,
+    "short", 0,
+    "signed", 0,
+    "sizeof", 0,
+    "static", 0,
+    "static_assert", 0,
+    "struct", 0,
+    "switch", 0,
+    "thread_local", 0,
+    "true", 0,
+    "typedef", 0,
+    "typeof", 0,
+    "typeof_unqual", 0,
+    "union", 0,
+    "unsigned", 0,
+    "void", 0,
+    "volatile", 0,
+    "while", 0
 };
 #define NKEYS (sizeof keytab / sizeof keytab[0])
 int getword(char *, int);
 struct key *binsearch(char *, struct key *, int);
 int getch(void);
 void ungetch(int);
+
 // K&R Pg. 137
 // count C keywords; pointer version
 int main()
@@ -73,7 +74,7 @@ int main()
     char word[MAXWORD];
     struct key *p;
     while (getword(word, MAXWORD) != EOF)
-        if (isalpha(word[0]))
+        if (isalpha(word[0]) || word[0] == '_')
             if ((p=binsearch(word, keytab, NKEYS)) != NULL)
                 p->count++;
     for (p = keytab; p < keytab + NKEYS; p++)
@@ -82,6 +83,7 @@ int main()
                 p->count, p->word);
     return 0;
 }
+
 // binserach: find word in tab[0]...tab[n-1]
 struct key *binsearch(char *word, struct key *tab, int n)
 {
@@ -110,12 +112,12 @@ int getword(char *word, int lim)
         ;
     if (c != EOF)
         *w++ = c;
-    if (!isalpha(c)) {
+    if (!isalpha(c) || c == '_') {
         *w = '\0';
         return c;
     }
     for ( ; --lim > 0; w++)
-        if (!isalnum(*w = getch())) {
+        if (!isalnum(*w = getch()) || *w == '_') {
             ungetch(*w);
             break;
         }
