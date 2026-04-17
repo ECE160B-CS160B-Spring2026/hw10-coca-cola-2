@@ -39,29 +39,20 @@ struct nlist *install(char *name, char *defn) {
 
     if ((np = lookup(name)) == NULL) {
         np = (struct nlist *) malloc(sizeof(*np));
-        if (np == NULL) {
+        if (np == NULL || (np->name = strdup(name)) == NULL) {
             return NULL;
-        }
-
-        np->name = strdup(name);
-        if (np->name == NULL) {
-            free(np);
-            return NULL;
-        }
-
+        } 
         hashval = hash(name);
         np->next = hashtab[hashval];
         hashtab[hashval] = np;
-        np->defn = NULL;
     } else {
-        free(np->defn);
+        free((void *) np->defn);
     }
-
-    np->defn = strdup(defn);
-    if (np->defn == NULL) {
+        
+    if ((np->defn = strdup(defn)) == NULL) {
         return NULL;
     }
-
+    
     return np;
 }
 
@@ -78,13 +69,9 @@ int intersection(int output[], int array1[], int lenArr1, int array2[], int lenA
         sprintf(key, "%d", array2[i]);
         struct nlist *n = lookup(key);
 
-        if (n != NULL) {
+        if (n != NULL && strcmp(n->defn, "1") == 0) {
             output[count++] = array2[i];
-
-            free(n->defn);
-            n->defn = strdup("0");
-            free(n->name);
-            n->name = strdup("#used#");
+            install(key, "0"); // So no double count
         }
     }
 
@@ -125,10 +112,7 @@ int main() {
     int resultLength = intersection(result, arr1, n1, arr2, n2);
 
     for (int i = 0; i < resultLength; i++) {
-        printf("%d", result[i]);
-        if (i < resultLength - 1) {
-            printf(" ");
-        }
+        printf("%d ", result[i]);
     }
     printf("\n");
 
