@@ -39,50 +39,63 @@ struct nlist *install(char *name, char *defn) {
 
     if ((np = lookup(name)) == NULL) {
         np = (struct nlist *) malloc(sizeof(*np));
-        if (np == NULL || (np->name = strdup(name)) == NULL) {
+        if (np == NULL) {
+            return NULL;
+        }
+
+        np->name = strdup(name);
+        if (np->name == NULL) {
+            free(np);
             return NULL;
         }
 
         hashval = hash(name);
         np->next = hashtab[hashval];
         hashtab[hashval] = np;
+        np->defn = NULL;
+    } else {
+        free(np->defn);
     }
-    else {
-        free((void *) np->defn);
+
+    np->defn = strdup(defn);
+    if (np->defn == NULL) {
+        return NULL;
     }
 
     return np;
 }
 
-void intersection(int output[], int array1[], int lenArr1, int array2[], int lenArr2) {
-    
+int intersection(int output[], int array1[], int lenArr1, int array2[], int lenArr2) {
     char key[50];
-    char value[50];
+    int count = 0;
 
     for (int i = 0; i < lenArr1; i++) {
         sprintf(key, "%d", array1[i]);
-        sprintf(value, "%d", i);
-        install(key, value);
-    } 
-    
-    int count = 0;
+        install(key, "1");
+    }
+
     for (int i = 0; i < lenArr2; i++) {
         sprintf(key, "%d", array2[i]);
         struct nlist *n = lookup(key);
 
         if (n != NULL) {
-             output[count++] = atoi(n->defn);
-             output[count++] = i;
+            output[count++] = array2[i];
+
+            free(n->defn);
+            n->defn = strdup("0");
+            free(n->name);
+            n->name = strdup("#used#");
         }
     }
+
+    return count;
 }
 
 int main() {
     int n1, n2;
 
     scanf("%d", &n1);
-    int *arr1 = malloc(n1 *sizeof(int));
-
+    int *arr1 = malloc(n1 * sizeof(int));
     if (arr1 == NULL) {
         return 1;
     }
@@ -90,10 +103,9 @@ int main() {
     for (int i = 0; i < n1; i++) {
         scanf("%d", &arr1[i]);
     }
-    
-    scanf("%d", n2);
-    int *arr2 = malloc(n2 * sizeof(int));
 
+    scanf("%d", &n2);
+    int *arr2 = malloc(n2 * sizeof(int));
     if (arr2 == NULL) {
         free(arr1);
         return 1;
@@ -102,22 +114,27 @@ int main() {
     for (int i = 0; i < n2; i++) {
         scanf("%d", &arr2[i]);
     }
-    
 
-    int *result = malloc(2 * n2 * sizeof(int));
-
+    int *result = malloc((n1 < n2 ? n1 : n2) * sizeof(int));
     if (result == NULL) {
         free(arr1);
         free(arr2);
         return 1;
     }
 
-    intersection(result, arr1, n1, arr2, n2);
-
-    int resultLength = sizeof(result) / sizeof(result[0]);
+    int resultLength = intersection(result, arr1, n1, arr2, n2);
 
     for (int i = 0; i < resultLength; i++) {
-        printf("%d %d\n", result[i++], result[i]);
+        printf("%d", result[i]);
+        if (i < resultLength - 1) {
+            printf(" ");
+        }
     }
-    
+    printf("\n");
+
+    free(arr1);
+    free(arr2);
+    free(result);
+
+    return 0;
 }
