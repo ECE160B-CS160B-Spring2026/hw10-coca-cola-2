@@ -10,4 +10,20 @@ Have your main function accept the following inputs: number of points in array1,
 
 Compile Steps:
 
+```
+gcc q3.c
+```
+
 Output:
+
+```
+Input:
+4 
+1 2 3 1
+
+5
+1 2 5 6 7
+
+Output:
+1 2
+```
