@@ -98,7 +98,7 @@ void sortarray(node **list, int n){
 
 void arrayprint(node **list, int n) {
 	for (int i = 0; i < n; i++){
-		printf("%s: %d\n", list[i]->data, list[i]->count);
+		printf("%d %s\n", list[i]->count, list[i]->data);
 	}
 }
 
