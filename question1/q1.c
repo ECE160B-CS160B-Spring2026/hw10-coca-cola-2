@@ -112,12 +112,12 @@ int getword(char *word, int lim)
         ;
     if (c != EOF)
         *w++ = c;
-    if (!isalpha(c) || c == '_') {
+    if (!isalpha(c) && c != '_') {
         *w = '\0';
         return c;
     }
     for ( ; --lim > 0; w++)
-        if (!isalnum(*w = getch()) || *w == '_') {
+        if (!isalnum(*w = getch()) && *w != '_') {
             ungetch(*w);
             break;
         }
