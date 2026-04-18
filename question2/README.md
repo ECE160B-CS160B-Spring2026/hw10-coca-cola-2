@@ -6,16 +6,20 @@ Hint: First count all the words, then use a tree, but compare counts rather than
 
 Compile Steps: 
 
+```
 gcc q2.c
+```
 
 Command(s) to run:
 
+```
 ./a.out < test1.txt
-
+```
 
 Output:
 
+```
 3 hi 
 2 apple 
 1 cooper 
-
+```
